@@ -86,35 +86,7 @@ class ChatLlama(EngineLM, CachedEngine):
             print(f"############################response {response}")
             return res
 
-
-    # def generate(
-    #     self, prompt, system_prompt=None, temperature=0, max_tokens=2000, top_p=0.99
-    # ):
-    #     sys_prompt_arg = str(system_prompt) if system_prompt else self.system_prompt
-
-    #     cache_or_none = self._check_cache(sys_prompt_arg + str(prompt))
-    #     if cache_or_none is not None:
-    #         return cache_or_none
-
-    #     # Combine system prompt and user prompt with tags
-    #     combined_prompt = f"<system_prompt>{sys_prompt_arg}</system_prompt>\n<user_prompt>{str(prompt)}</user_prompt>"
-
-    #     print("Generating response...")
-    #     try:
-    #         # Generate results
-    #         res = self.llm(combined_prompt)
-    #         # Assuming the response is in a nested structure, extract the text
-    #         response_text = res["generated_text"] if isinstance(res, dict) and "generated_text" in res else res
-    #         if isinstance(response_text, list):
-    #             response_text = response_text[0]  # In case the response is a list of dicts
-    #     except AttributeError as e:
-    #         print(f"Error during generation: {e}")
-    #         raise e
-
-    #     self._save_cache(sys_prompt_arg + str(prompt), response_text)
-    #     return response_text
-
-    
+   
     @retry(wait=wait_random_exponential(min=1, max=5), stop=stop_after_attempt(5))
     def __call__(self, prompt, **kwargs):
         return self.generate(prompt, **kwargs)
