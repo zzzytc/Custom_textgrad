@@ -1,6 +1,6 @@
 import os
 import platformdirs
-from transformers import AutoModelForCausalLM, AutoProcessor
+from transformers import AutoModelForCausalLM, AutoProcessor, BitsAndBytesConfig
 from PIL import Image
 import requests
 
@@ -31,24 +31,24 @@ class Chatphi3(EngineLM, CachedEngine):
         super().__init__(cache_path=cache_path)
 
 
-        # # Load the model with BitsAndBytes configuration
-        # self.bnb_config = BitsAndBytesConfig(
-        #     load_in_4bit=load_in_4bit,
-        #     bnb_4bit_quant_type="nf4",
-        #     bnb_4bit_compute_dtype="bfloat16",
-        #     bnb_4bit_use_double_quant=True,
-        # )
+        # Load the model with BitsAndBytes configuration
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=load_in_4bit,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype="bfloat16",
+            bnb_4bit_use_double_quant=True,
+        )
         
-        # self.model = AutoModelForCausalLM.from_pretrained(
-        #     model_name,
-        #     torch_dtype=dtype,
-        #     trust_remote_code=True,
-        #     quantization_config=self.bnb_config,
-        #     device_map='auto',
-        #     attn_implementation='flash_attention_2',
-        #     token= HF_TOKEN
-        # )
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map="cuda", trust_remote_code=True, torch_dtype="auto", _attn_implementation='flash_attention_2') # use _attn_implementation='eager' to disable flash attention
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            torch_dtype=dtype,
+            trust_remote_code=True,
+            quantization_config=bnb_config,
+            device_map='auto',
+            attn_implementation='flash_attention_2',
+            token= HF_TOKEN
+        )
+        # self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map="cuda", trust_remote_code=True, torch_dtype="auto", _attn_implementation='flash_attention_2') # use _attn_implementation='eager' to disable flash attention
 
         self.processor = AutoProcessor.from_pretrained(processor_name, trust_remote_code=True)
         
