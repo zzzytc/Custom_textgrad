@@ -63,7 +63,7 @@ class originalChatphi3(EngineLM, CachedEngine):
         #     return_full_text=False
         # )
     
-    def generate(self, question, image_path, system_prompt = None, eos_token_id=None, generation_args = { "max_new_tokens": 500, "temperature": 0.0, "do_sample": False } ):
+    def generate(self, question, image_path, system_prompt = None, eos_token_id=None ):
         eos_token_id = self.processor.tokenizer.eos_token_id
 
         messages = [ 
@@ -79,14 +79,9 @@ class originalChatphi3(EngineLM, CachedEngine):
         print(f"#####################DEBUG_prompt: {prompt}")
 
         inputs = self.processor(prompt, [image], return_tensors="pt").to("cuda:0")
-        # print("Generating response...")
-        # try:
-        #     response = self.pipeline(prompt, max_length=max_tokens, return_full_text=False)
-        #     print("Generated response:", response)
-        # except Exception as e:
-        #     print(f"Error during generation: {e}")
-        #     raise
 
+        generation_args = { "max_new_tokens": 500, "temperature": 0.0, "do_sample": False }
+        generate_ids = self.model.generate(**inputs, eos_token_id=self.processor.tokenizer.eos_token_id, **generation_args) 
         generate_ids = generate_ids[:, inputs['input_ids'].shape[1]:]
         response = self.processor.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0] 
 
