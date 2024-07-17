@@ -8,7 +8,7 @@ from .base import EngineLM, CachedEngine
 from PIL import Image
 
 
-class Chatphi3(EngineLM, CachedEngine):
+class originalChatphi3(EngineLM, CachedEngine):
     def __init__(
             self, 
             model_name = "microsoft/Phi-3-vision-128k-instruct", 

@@ -34,5 +34,5 @@ def get_engine(engine_name: str, **kwargs) -> EngineLM:
     #     from .phi3 import Chatphi3
     #     return Chatphi3(model_string=engine_name, **kwargs)
     else:
-        from .originalphi3 import Chatphi3
-        return Chatphi3(model_string=engine_name, **kwargs)
+        from .originalphi3 import originalChatphi3
+        return originalChatphi3(**kwargs)
