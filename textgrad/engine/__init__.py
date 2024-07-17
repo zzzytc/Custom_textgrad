@@ -30,9 +30,9 @@ def get_engine(engine_name: str, **kwargs) -> EngineLM:
     elif engine_name in ["command-r-plus", "command-r", "command", "command-light"]:
         from .cohere import ChatCohere
         return ChatCohere(model_string=engine_name, **kwargs)
-    elif "catyung" in engine_name: 
-        from .phi3 import Chatphi3
-        return Chatphi3(model_string=engine_name, **kwargs)
+    # elif "catyung" in engine_name: 
+    #     from .phi3 import Chatphi3
+    #     return Chatphi3(model_string=engine_name, **kwargs)
     else:
-        from .Llama import ChatLlama
-        return ChatLlama(model_string=engine_name, **kwargs)
+        from .originalphi3 import Chatphi3
+        return Chatphi3(model_string=engine_name, **kwargs)
