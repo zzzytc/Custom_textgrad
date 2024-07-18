@@ -14,7 +14,7 @@ from .llm_backward_prompts import (
 )
 # from .multimodal_backward_prompts import MULTIMODAL_CONVERSATION_TEMPLATE
 from typing import Union
-from textgrad.config import validate_engine_or_get_default
+# from textgrad.config import validate_engine_or_get_default
 from .function import Function, BackwardContext
 
 
