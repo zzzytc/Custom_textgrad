@@ -2,7 +2,7 @@ from textgrad import logger
 from textgrad.defaults import (SYSTEM_PROMPT_DEFAULT_ROLE, 
                                VARIABLE_OUTPUT_DEFAULT_ROLE)
 from textgrad.variable import Variable
-from textgrad.engine import EngineLM, validate_multimodal_engine
+from textgrad.engine import EngineLM
 from typing import List
 from .llm_backward_prompts import (
     EVALUATE_VARIABLE_INSTRUCTION,
@@ -12,7 +12,7 @@ from .llm_backward_prompts import (
     OBJECTIVE_INSTRUCTION_BASE,
     BACKWARD_SYSTEM_PROMPT,
 )
-from .multimodal_backward_prompts import MULTIMODAL_CONVERSATION_TEMPLATE
+# from .multimodal_backward_prompts import MULTIMODAL_CONVERSATION_TEMPLATE
 from typing import Union
 from textgrad.config import validate_engine_or_get_default
 from .function import Function, BackwardContext

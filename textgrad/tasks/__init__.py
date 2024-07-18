@@ -32,9 +32,12 @@ def load_task(task_name: str, evaluation_api: EngineLM, *args, **kwargs) -> Tupl
         file_path = '/content/drive/MyDrive/Intern/Aatrox/Fine Tuning Phi-3 With Lora/Image/objective.json'
         with open(file_path, 'r') as file:
             data = json.load(file)
-        train_set = data[0:15]
-        val_set = data[16:31]
-        test_set = data[32:47]
+
+        data_list_dict = list(data.values())
+            
+        train_set = data_list_dict[:15]
+        val_set = data_list_dict[16:31]
+        test_set = data_list_dict[32:47]
 
         role_descriptions = [
             "Question for the task",
