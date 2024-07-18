@@ -25,7 +25,30 @@ def load_task(task_name: str, evaluation_api: EngineLM, *args, **kwargs) -> Tupl
         task_name: the name of the task to evaluate
         evaluation_api: the engine to use for evaluation, if needed
     """
-    if "object_counting" in task_name:
+
+    if "Aatrox" in task_name:
+        from .big_bench_hard import BigBenchHard, string_based_equality_fn
+        import json
+        file_path = '/content/drive/MyDrive/Intern/Aatrox/Fine Tuning Phi-3 With Lora/Image/objective.json'
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        train_set = data[0:15]
+        val_set = data[16:31]
+        test_set = data[32:47]
+
+        role_descriptions = [
+            "Question for the task",
+            "Ground truth answer",
+            "Reasoning and prediction from the language model"
+        ]
+        fn_purpose = "The runtime of string-based function that checks if the two texts have the same senmentic meaning. Say only 0(no) or 1(yes) only."
+        eval_fn = StringBasedFunction(string_based_equality_fn, function_purpose=fn_purpose)
+        # eval_fn = 
+
+        return train_set, val_set, test_set, eval_fn
+        
+
+    elif "object_counting" in task_name:
         from textgrad.loss import MultiFieldTokenParsedEvaluation
         from .big_bench_hard import BigBenchHard, string_based_equality_fn
         from textgrad.autograd.string_based_ops import StringBasedFunction
