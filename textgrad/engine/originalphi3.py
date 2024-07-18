@@ -30,55 +30,29 @@ class originalChatphi3(EngineLM, CachedEngine):
         
         super().__init__(cache_path=cache_path)
 
-
-        # Load the model with BitsAndBytes configuration
-        # bnb_config = BitsAndBytesConfig(
-        #     load_in_4bit=load_in_4bit,
-        #     bnb_4bit_quant_type="nf4",
-        #     bnb_4bit_compute_dtype="bfloat16",
-        #     bnb_4bit_use_double_quant=True,
-        # )
-        
-        # self.model = AutoModelForCausalLM.from_pretrained(
-        #     model_name,
-        #     torch_dtype=dtype,
-        #     trust_remote_code=True,
-        #     quantization_config=bnb_config,
-        #     device_map='auto',
-        #     attn_implementation='flash_attention_2',
-        #     token= HF_TOKEN
-        # )
         self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map="cuda", trust_remote_code=True, torch_dtype="auto", _attn_implementation='flash_attention_2') # use _attn_implementation='eager' to disable flash attention
 
         self.processor = AutoProcessor.from_pretrained(processor_name, trust_remote_code=True)
+            
+    def generate(self, question, image_path=None, system_prompt = None, eos_token_id=None ):
         
-        # Initialize the pipeline
-        # self.pipeline = pipeline(
-        #     "text-generation",
-        #     model=self.model,
-        #     processor=self.processor,
-        #     max_new_tokens=20,
-        #     temperature=0.0,
-        #     do_sample=False,
-        #     return_full_text=False
-        # )
-    
-    def generate(self, question, image_path, system_prompt = None, eos_token_id=None ):
         eos_token_id = self.processor.tokenizer.eos_token_id
 
         messages = [ 
             {"role": "user", "content": f"<|image_1|>\n{system_prompt}"}, 
             {"role": "user", "content": f"{question}"} ]
-            
-        image = Image.open(requests.get(image_path, stream=True).raw)
+        if image_path != None:    
+            image = Image.open(requests.get(image_path, stream=True).raw)
         prompt = self.processor.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
         if prompt.endswith("<|endoftext|>"):
             prompt = prompt.rstrip("<|endoftext|>")
-
+        
         print(f"#####################DEBUG_prompt: {prompt}")
-
-        inputs = self.processor(prompt, [image], return_tensors="pt").to("cuda:0")
+        if image_path != None: 
+            inputs = self.processor(prompt, [image], return_tensors="pt").to("cuda:0")
+        else:
+            inputs = self.processor(prompt, images=None, return_tensors="pt").to("cuda:0")
 
         generation_args = { "max_new_tokens": 500, "temperature": 0.0, "do_sample": False }
         generate_ids = self.model.generate(**inputs, eos_token_id=self.processor.tokenizer.eos_token_id, **generation_args) 
@@ -87,6 +61,9 @@ class originalChatphi3(EngineLM, CachedEngine):
 
         print (f"################DEBUG response{response}")
         return response
-    
+
+            
+
+
     def __call__(self, prompt, **kwargs):
         return self.generate(prompt, **kwargs)
