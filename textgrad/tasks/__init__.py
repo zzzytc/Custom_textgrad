@@ -6,6 +6,9 @@ from typing import Tuple, Callable
 from textgrad import Variable
 from textgrad.engine import EngineLM
 
+import openai
+import os
+
 AVAILABLE_DATASETS = [
     "BBH_object_counting",
     "BBH_word_sorting",
@@ -19,6 +22,9 @@ AVAILABLE_INSTANCE_DATASETS = [
     "LeetCodeHardEval"
 ]
 
+
+
+
 def load_task(task_name: str, evaluation_api: EngineLM, *args, **kwargs) -> Tuple[Dataset, Dataset, Callable]:
     """
     Args:
@@ -27,7 +33,8 @@ def load_task(task_name: str, evaluation_api: EngineLM, *args, **kwargs) -> Tupl
     """
 
     if "Aatrox" in task_name:
-        from .big_bench_hard import BigBenchHard, string_based_equality_fn
+        from textgrad.autograd.string_based_ops import StringBasedFunction
+        from .big_bench_hard import BigBenchHard, eval_semantic_similarity
         import json
         file_path = '/content/drive/MyDrive/Intern/Aatrox/Fine Tuning Phi-3 With Lora/Image/objective.json'
         with open(file_path, 'r') as file:
@@ -35,9 +42,9 @@ def load_task(task_name: str, evaluation_api: EngineLM, *args, **kwargs) -> Tupl
 
         data_list_dict = list(data.values())
             
-        train_set = data_list_dict[:15]
-        val_set = data_list_dict[16:31]
-        test_set = data_list_dict[32:47]
+        train_set = data_list_dict[:16]
+        val_set = data_list_dict[16:32]
+        test_set = data_list_dict[32:48]
 
         role_descriptions = [
             "Question for the task",
@@ -45,8 +52,7 @@ def load_task(task_name: str, evaluation_api: EngineLM, *args, **kwargs) -> Tupl
             "Reasoning and prediction from the language model"
         ]
         fn_purpose = "The runtime of string-based function that checks if the two texts have the same senmentic meaning. Say only 0(no) or 1(yes) only."
-        eval_fn = StringBasedFunction(string_based_equality_fn, function_purpose=fn_purpose)
-        # eval_fn = 
+        eval_fn = StringBasedFunction(eval_semantic_similarity, function_purpose=fn_purpose)
 
         return train_set, val_set, test_set, eval_fn
         
